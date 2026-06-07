@@ -1,20 +1,7 @@
 import json
 import customtkinter as ctk
-ctk.set_appearance_mode("dark")
-app = ctk.CTk()
-left_frame = ctk.CTkFrame(app, width=300)
-left_frame.pack(side="left", fill="y", padx=20, pady=20)
-title = ctk.CTkLabel(left_frame, text="Student Form", font=("Arial", 20, "bold"))
-title.pack(pady=20)
-name_entry = ctk.CTkEntry(left_frame, placeholder_text="Enter Name")
-name_entry.pack(pady=10)
-grade_entry = ctk.CTkEntry(left_frame, placeholder_text="Enter Grade")
-grade_entry.pack(pady=10)
-add_btn = ctk.CTkButton(left_frame, text="Add Student")
-add_btn.pack(pady=20)
-app.title("Student Grade Manager")
-app.geometry("1000x600")
-app.mainloop()
+
+students = {}
 def load_students():
     global students
 
@@ -29,39 +16,27 @@ def save_students():
         json.dump(students, f, indent=4)
 load_students()
 def add_student():
-    name = input("Enter student name: ").lower()
-    grade = int(input("Enter student grade: "))
+    name = name_entry.get().lower()
+    grade = int(grade_entry.get())
     students[name] = grade
     save_students()
-    print(f"{name} added successfully.")
+    show_students()
 def highest_grade():
-    if not students:
-        print("No student data available.")
-        return
-    highest = max(students.values())
-    top_students = [
-        name
-        for name, grade in students.items()
-        if grade == highest
-    ]
-    print(f"Highest Grade: {highest}")
-    print("Top Student(s):")
-    for student in top_students:
-        print(student)
+    if students:
+        highest = max(students.values())
+        result_label.configure(text=f"Highest: {highest}")
 def delete_student():
-    name = input("Enter student name to delete: ").lower()
+    name = name_entry.get().lower()
     if name in students:
         del students[name]
         save_students()
-        print(f"{name} deleted successfully.")
+        show_students()
     else:
         print("Student not found.")
 def average_grade():
-    if not students:
-        print("No student data available.")
-        return
-    average = sum(students.values()) / len(students)
-    print(f"Average Grade: {average:.2f}")
+    if students:
+        avg = sum(students.values()) / len(students)
+        result_label.configure(text=f"Average: {avg:.2f}")
 def view_all_students():
     if not students:
         print("No students found.")
@@ -69,37 +44,52 @@ def view_all_students():
     print("\nStudent Records")
     for name, grade in students.items():
         print(f"{name} : {grade}")
-while True:
-    print("\n===== STUDENT GRADE MANAGER =====")
-    print("""Enter choice:
+def show_students():
+    student_box.delete("1.0", "end")
+    for name, grade in students.items():
+        student_box.insert("end", f"{name} : {grade}\n")
+ctk.set_appearance_mode("dark")
+app = ctk.CTk()
+app.title("Student Grade Manager")
+app.geometry("1000x600")
 
-    1. Add Student
-    2. Highest Grade
-    3. Delete Student
-    4. Average Grade
-    5. View All Students
-    6. Exit""")
-    choice = input("Enter your choice: ")
-    if choice == '1':
-        add_student()
-        save_students()
-    elif choice == '2':
-        highest_grade()
-        
-    elif choice == '3':
-        delete_student()
-        save_students()
-    elif choice == '4':
-        average_grade()
-        
-    elif choice == '5':
-        view_all_students()
-        load_students()
-    elif choice == '6':
-        print("Exiting Student Grade Manager. Goodbye!")
-        break
-    else:
-        print("Invalid choice. Please try again.")
+left_frame = ctk.CTkFrame(app, width=300)
+left_frame.pack(side="left", fill="y", padx=20, pady=20)
+
+title = ctk.CTkLabel(left_frame, text="Student Form", font=("Arial", 20, "bold"))
+title.pack(pady=20)
+
+name_entry = ctk.CTkEntry(left_frame, placeholder_text="Enter Name")
+name_entry.pack(pady=10)
+
+grade_entry = ctk.CTkEntry(left_frame, placeholder_text="Enter Grade")
+grade_entry.pack(pady=10)
+add_btn = ctk.CTkButton(left_frame, text="Add Student", command=add_student)
+add_btn.pack(pady=10)
+
+delete_btn = ctk.CTkButton(left_frame, text="Delete Student", command=delete_student)
+delete_btn.pack(pady=10)
+
+avg_btn = ctk.CTkButton(left_frame, text="Show Average", command=average_grade)
+avg_btn.pack(pady=10)
+
+highest_btn = ctk.CTkButton(left_frame, text="Highest Grade", command=highest_grade)
+highest_btn.pack(pady=10)
+right_frame = ctk.CTkFrame(app)
+right_frame.pack(side="right", fill="both", expand=True, padx=20, pady=20)
+
+right_title = ctk.CTkLabel(right_frame, text="Students List", font=("Arial", 20, "bold"))
+right_title.pack(pady=20)
+
+student_box = ctk.CTkTextbox(right_frame, width=400, height=400)
+student_box.pack(pady=10)
+result_label = ctk.CTkLabel(right_frame, text="", font=("Arial", 16))
+result_label.pack(pady=10)
+
+show_students()
+
+app.mainloop()
+
 
 
  
