@@ -1,4 +1,20 @@
 import json
+import customtkinter as ctk
+ctk.set_appearance_mode("dark")
+app = ctk.CTk()
+left_frame = ctk.CTkFrame(app, width=300)
+left_frame.pack(side="left", fill="y", padx=20, pady=20)
+title = ctk.CTkLabel(left_frame, text="Student Form", font=("Arial", 20, "bold"))
+title.pack(pady=20)
+name_entry = ctk.CTkEntry(left_frame, placeholder_text="Enter Name")
+name_entry.pack(pady=10)
+grade_entry = ctk.CTkEntry(left_frame, placeholder_text="Enter Grade")
+grade_entry.pack(pady=10)
+add_btn = ctk.CTkButton(left_frame, text="Add Student")
+add_btn.pack(pady=20)
+app.title("Student Grade Manager")
+app.geometry("1000x600")
+app.mainloop()
 def load_students():
     global students
 
